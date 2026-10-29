@@ -762,6 +762,30 @@ def test_controller_attributes_stay_below_recorder_limit() -> None:
     )
 
 
+def test_zone_attributes_stay_below_recorder_limit() -> None:
+    """A fully populated zone still fits both selected and local weekly graphs."""
+    def intervals() -> list[dict[str, Any]]:
+        return [
+            {"start": index * 180, "stop": (index + 1) * 180, "temp": 200 + index}
+            for index in range(4)
+        ]
+
+    zone = _zone()
+    zone["schedule"]["p0Intervals"] = intervals()
+    zone["schedule"]["p1Intervals"] = intervals()
+    payload = _payload(zone)
+    global_schedule = payload["zones"]["globalSchedules"]["elements"][0]
+    global_schedule["p0Intervals"] = intervals()
+    global_schedule["p1Intervals"] = intervals()
+
+    attributes = schedules.zone_schedule_attributes(_snapshot(payload), 101)
+    assert len(json.dumps(attributes)) < 16384
+    assert attributes["selected_schedule"]["valid"] is True
+    assert attributes["local_schedule"]["valid"] is True
+    assert "raw" not in attributes["selected_schedule"]
+    assert "raw" not in attributes["local_schedule"]
+
+
 @pytest.mark.asyncio
 async def test_schedule_problem_sensor_tracks_only_selected_templates() -> None:
     """A broken selected global template turns the problem sensor on."""
