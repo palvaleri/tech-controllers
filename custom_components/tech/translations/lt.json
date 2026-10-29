@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Tvarkaraščiai"
+            },
+            "zone_schedule_entity": {
+                "name": "Tvarkaraštis"
+            },
+            "local_schedule_entity": {
+                "name": "Vietinis tvarkaraštis"
+            },
+            "global_schedule_entity": {
+                "name": "Bendras tvarkaraštis {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Tvarkaraščio problema"
             }
         }
     },

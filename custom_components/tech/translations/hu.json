@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Ütemtervek"
+            },
+            "zone_schedule_entity": {
+                "name": "Ütemterv"
+            },
+            "local_schedule_entity": {
+                "name": "Helyi ütemterv"
+            },
+            "global_schedule_entity": {
+                "name": "Globális ütemterv {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Ütemterv probléma"
             }
         }
     },

@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Harmonogramy"
+            },
+            "zone_schedule_entity": {
+                "name": "Harmonogram"
+            },
+            "local_schedule_entity": {
+                "name": "Místní harmonogram"
+            },
+            "global_schedule_entity": {
+                "name": "Globální harmonogram {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Problém s harmonogramem"
             }
         }
     },

@@ -83,6 +83,18 @@
       },
       "controller_schedules": {
         "name": "Schedules"
+      },
+      "zone_schedule_entity": {
+        "name": "Schedule"
+      },
+      "local_schedule_entity": {
+        "name": "Local schedule"
+      },
+      "global_schedule_entity": {
+        "name": "Global schedule {schedule_number}"
+      },
+      "schedule_problem_entity": {
+        "name": "Schedule problem"
       }
     }
   },

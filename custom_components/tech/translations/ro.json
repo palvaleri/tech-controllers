@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Programări"
+            },
+            "zone_schedule_entity": {
+                "name": "Programare"
+            },
+            "local_schedule_entity": {
+                "name": "Programare locală"
+            },
+            "global_schedule_entity": {
+                "name": "Programare globală {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Problemă de programare"
             }
         }
     },

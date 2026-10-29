@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Rasporedi"
+            },
+            "zone_schedule_entity": {
+                "name": "Raspored"
+            },
+            "local_schedule_entity": {
+                "name": "Lokalni raspored"
+            },
+            "global_schedule_entity": {
+                "name": "Globalni raspored {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Problem s rasporedom"
             }
         }
     },

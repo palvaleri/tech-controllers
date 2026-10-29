@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Ajakavad"
+            },
+            "zone_schedule_entity": {
+                "name": "Ajakava"
+            },
+            "local_schedule_entity": {
+                "name": "Kohalik ajakava"
+            },
+            "global_schedule_entity": {
+                "name": "Globaalne ajakava {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Ajakava probleem"
             }
         }
     },

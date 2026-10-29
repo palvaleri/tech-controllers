@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Расписания"
+            },
+            "zone_schedule_entity": {
+                "name": "Расписание"
+            },
+            "local_schedule_entity": {
+                "name": "Локальное расписание"
+            },
+            "global_schedule_entity": {
+                "name": "Глобальное расписание {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Проблема расписания"
             }
         }
     },

@@ -83,6 +83,18 @@
       },
       "controller_schedules": {
         "name": "Harmonogramy"
+      },
+      "zone_schedule_entity": {
+        "name": "Harmonogram"
+      },
+      "local_schedule_entity": {
+        "name": "Harmonogram lokalny"
+      },
+      "global_schedule_entity": {
+        "name": "Harmonogram globalny {schedule_number}"
+      },
+      "schedule_problem_entity": {
+        "name": "Problem z harmonogramem"
       }
     }
   },

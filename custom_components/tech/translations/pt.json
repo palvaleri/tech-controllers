@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Horários"
+            },
+            "zone_schedule_entity": {
+                "name": "Horário"
+            },
+            "local_schedule_entity": {
+                "name": "Horário local"
+            },
+            "global_schedule_entity": {
+                "name": "Horário global {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Problema de horário"
             }
         }
     },

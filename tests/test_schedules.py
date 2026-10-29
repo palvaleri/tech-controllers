@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from enum import IntFlag
+import json
 import sys
 from types import ModuleType, SimpleNamespace
 from typing import Any
@@ -19,6 +20,7 @@ from . import test_platform_device_info as support
 schedules = support._load_tech_module("schedules")
 tech = support._load_tech_module("tech")
 sensor = support.sensor
+binary_sensor = support.binary_sensor
 const = support.const
 
 
@@ -171,7 +173,7 @@ def test_week_is_monday_first_with_temperatures_boundaries_and_setback() -> None
         "intervals": [],
         "setback_temperature": 19.0,
     }
-    assert decoded["raw"] == raw
+    assert "raw" not in decoded
     assert decoded["errors"] == []
 
 
@@ -199,7 +201,7 @@ def test_bad_interval_never_creates_a_plausible_day(interval: Any) -> None:
     assert decoded["week"]["monday"] is None
     assert decoded["week"]["saturday"] is not None
     assert decoded["errors"]
-    assert decoded["raw"] == raw
+    assert "raw" not in decoded
 
 
 def test_overlapping_intervals_and_conflicting_days_are_reported() -> None:
@@ -388,6 +390,60 @@ def test_duplicate_deleted_or_invalid_template_cannot_be_active() -> None:
     assert schedules.zone_schedule_info(snapshot, 101)["active_schedule_name"] is None
 
 
+def test_unused_local_placeholders_do_not_make_the_controller_partial() -> None:
+    """The L-8 shape: constant-temp zones with broken but unused local templates."""
+    zone = _zone(mode="constantTemp")
+    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 0, "temp": 200}
+    snapshot = _snapshot(_payload(zone))
+    assert schedules.zone_schedule_info(snapshot, 101)["configured_source"] is None
+    assert schedules.schedule_problem(snapshot) is False
+    assert schedules.schedule_diagnostics(snapshot)["status"] == "ready"
+
+
+def test_a_broken_selected_local_schedule_is_a_problem() -> None:
+    """A selected local template that fails decoding is a real controller problem."""
+    zone = _zone(mode="localSchedule")
+    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 0, "temp": 200}
+    snapshot = _snapshot(_payload(zone))
+    assert schedules.selected_schedule(snapshot, 101)["valid"] is False
+    assert schedules.schedule_problem(snapshot) is True
+    assert schedules.schedule_diagnostics(snapshot)["status"] == "partial"
+
+
+def test_a_broken_selected_global_schedule_is_a_problem() -> None:
+    """A selected global template that fails decoding is a real problem."""
+    payload = _payload()
+    payload["zones"]["globalSchedules"]["elements"][0]["p0Intervals"][0] = {
+        "start": 480,
+        "stop": 0,
+        "temp": 200,
+    }
+    snapshot = _snapshot(payload)
+    assert schedules.selected_schedule(snapshot, 101)["valid"] is False
+    assert schedules.schedule_problem(snapshot) is True
+    assert schedules.schedule_diagnostics(snapshot)["status"] == "partial"
+
+
+def test_a_pending_selected_schedule_is_partial_but_not_a_problem() -> None:
+    """A write in progress is incomplete, not a configuration error."""
+    payload = _payload()
+    payload["zones"]["globalSchedules"]["elements"][0]["duringChange"] = True
+    snapshot = _snapshot(payload)
+    assert schedules.selected_schedule(snapshot, 101)["settled"] is False
+    assert schedules.schedule_problem(snapshot) is False
+    assert schedules.schedule_diagnostics(snapshot)["status"] == "partial"
+
+
+def test_zone_schedule_attributes_include_selected_and_local_templates() -> None:
+    """The per-zone sensor carries both its configured template and its local copy."""
+    attributes = schedules.zone_schedule_attributes(_snapshot(), 101)
+    assert attributes["selected_schedule"]["source"] == "global"
+    assert attributes["selected_schedule"]["name"] == "Synthetic global"
+    assert attributes["selected_schedule"]["valid"] is True
+    assert attributes["local_schedule"]["valid"] is True
+    assert attributes["local_schedule"]["week"]["monday"] is not None
+
+
 @pytest.mark.parametrize(
     "envelope",
     [None, [], {}, {"elements": None}, {"elements": [None, {}, {"zone": []}]}],
@@ -406,22 +462,24 @@ def test_missing_and_malformed_zone_envelopes_clear_schedule_state(
 
 
 @pytest.mark.parametrize("raw", [None, [], "invalid", 0, {"p0Days": None}])
-def test_malformed_template_is_preserved_as_raw_without_raising(raw: Any) -> None:
-    """Decoder failures keep their source shape for diagnosis."""
+def test_malformed_template_decodes_without_raising(raw: Any) -> None:
+    """Decoder failures report errors without echoing the source payload."""
     result = schedules.normalize_schedule(raw)
     assert result["valid"] is False
-    assert result["raw"] == raw
+    assert "raw" not in result
     assert result["errors"]
 
 
-def test_pending_global_template_has_raw_provenance_but_no_completed_week() -> None:
+def test_pending_global_template_has_no_completed_week() -> None:
     """During change the diagnostic graph cannot look finalized."""
     snapshot = _snapshot()
     snapshot["globalSchedules"]["duringChange"] = True
     result = schedules.schedule_diagnostics(snapshot)["global_schedules"][0]
     assert result["valid"] is False
     assert result["week"] is None
-    assert result["raw"] == _schedule()
+    assert result["index"] == 1
+    assert result["name"] == "Synthetic global"
+    assert "raw" not in result
     assert "globalSchedules:during_change_or_unknown" in result["errors"]
 
 
@@ -561,6 +619,32 @@ async def test_real_cache_and_setup_share_existing_gets_and_clear_removed_zones(
     assert diagnostic._attr_entity_category == "diagnostic"
     assert diagnostic._attr_translation_key == "controller_schedules"
     assert diagnostic.device_info["identifiers"] == {(const.DOMAIN, _UDID)}
+    zone_schedules = [
+        entity for entity in added if isinstance(entity, sensor.ZoneScheduleSensor)
+    ]
+    local_schedules = [
+        entity for entity in added if isinstance(entity, sensor.ZoneLocalScheduleSensor)
+    ]
+    global_schedules = [
+        entity
+        for entity in added
+        if isinstance(entity, sensor.ControllerGlobalScheduleSensor)
+    ]
+    assert len(zone_schedules) == 1
+    assert zone_schedules[0].unique_id == f"{_UDID}_101_zone_schedule"
+    assert zone_schedules[0].native_value == "Synthetic global"
+    assert zone_schedules[0]._attr_translation_key == "zone_schedule_entity"
+    assert zone_schedules[0]._attr_entity_registry_enabled_default is True
+    assert len(local_schedules) == 1
+    assert local_schedules[0].unique_id == f"{_UDID}_101_zone_schedule_local"
+    assert local_schedules[0].native_value == "valid"
+    assert local_schedules[0]._attr_translation_key == "local_schedule_entity"
+    assert local_schedules[0]._attr_entity_registry_enabled_default is False
+    assert len(global_schedules) == 1
+    assert global_schedules[0].unique_id == f"{_UDID}_schedule_global_1"
+    assert global_schedules[0].native_value == "valid"
+    assert global_schedules[0]._attr_translation_key == "global_schedule_entity"
+    assert global_schedules[0]._attr_entity_registry_enabled_default is False
     assert len(transport.requests) == expected_gets
     assert (
         thermostats[0].extra_state_attributes["active_schedule_name"]
@@ -578,6 +662,121 @@ async def test_real_cache_and_setup_share_existing_gets_and_clear_removed_zones(
     assert thermostats[0].extra_state_attributes["schedule_mode"] is None
     assert diagnostic.extra_state_attributes["zones"] == {}
     assert diagnostic.extra_state_attributes["global_schedules"] == []
+
+
+def test_template_sensors_report_missing_pending_and_invalid() -> None:
+    """Each template sensor reports its own decode state."""
+    entry, coordinator = _context(_snapshot())
+    global_sensor = sensor.ControllerGlobalScheduleSensor(coordinator, entry, 1)
+    assert global_sensor.native_value == "valid"
+
+    payload = _payload()
+    payload["zones"]["globalSchedules"]["elements"][0]["p0Intervals"][0] = {
+        "start": 480,
+        "stop": 0,
+        "temp": 200,
+    }
+    coordinator.data["schedules"] = _snapshot(payload)
+    assert global_sensor.native_value == "invalid"
+
+    payload["zones"]["globalSchedules"]["elements"][0]["duringChange"] = True
+    coordinator.data["schedules"] = _snapshot(payload)
+    assert global_sensor.native_value == "pending"
+
+    missing = sensor.ControllerGlobalScheduleSensor(coordinator, entry, 4)
+    assert missing.native_value == "missing"
+
+    zone = _zone()
+    local = sensor.ZoneLocalScheduleSensor(zone, coordinator, entry)
+    assert local.native_value == "valid"
+    zone["schedule"]["p0Intervals"][0] = {
+        "start": 480,
+        "stop": 0,
+        "temp": 200,
+    }
+    coordinator.data["schedules"] = _snapshot(_payload(zone))
+    assert local.native_value == "invalid"
+
+
+def test_constant_temperature_zone_has_no_selected_schedule() -> None:
+    """A constant-temp zone still exposes its local template without inventing one."""
+    zone = _zone(mode="constantTemp")
+    entry, coordinator = _context(_snapshot(_payload(zone)))
+    zone_sensor = sensor.ZoneScheduleSensor(zone, coordinator, entry)
+    assert zone_sensor.native_value == "constantTemp"
+    attributes = zone_sensor.extra_state_attributes
+    assert attributes["selected_schedule"] is None
+    assert attributes["local_schedule"]["valid"] is True
+
+
+def test_controller_status_ignores_an_unused_broken_local_template() -> None:
+    """The L-8 case must not turn the controller diagnostic partial."""
+    zone = _zone(mode="constantTemp")
+    zone["schedule"]["p0Intervals"][0] = {
+        "start": 480,
+        "stop": 0,
+        "temp": 200,
+    }
+    entry, coordinator = _context(_snapshot(_payload(zone)))
+    diagnostic = sensor.ControllerSchedulesSensor(coordinator, entry)
+    assert diagnostic.native_value == "ready"
+    assert diagnostic.extra_state_attributes["zones"]["101"]["local_errors"]
+
+
+def test_controller_attributes_stay_below_recorder_limit() -> None:
+    """The controller summary must not duplicate every template's raw/week graph."""
+    payload = _payload()
+    payload["zones"]["elements"] = [_zone(zone_id=i) for i in range(101, 109)]
+    payload["zones"]["globalSchedules"]["elements"] = [_schedule(i) for i in range(5)]
+    entry, coordinator = _context(_snapshot(payload))
+    diagnostic = sensor.ControllerSchedulesSensor(coordinator, entry)
+    attributes = diagnostic.extra_state_attributes
+    assert len(json.dumps(attributes)) < 16384
+    assert all(
+        "raw" not in item and "week" not in item
+        for item in attributes["global_schedules"]
+    )
+    assert all(
+        "local_schedule" not in zone for zone in attributes["zones"].values()
+    )
+
+
+@pytest.mark.asyncio
+async def test_schedule_problem_sensor_tracks_only_selected_templates() -> None:
+    """A broken selected global template turns the problem sensor on."""
+    payload = _payload()
+    transport = _Transport(payload)
+    api = tech.Tech(
+        transport, "synthetic-user", "synthetic-token", "https://synthetic.invalid/"
+    )
+    data = await api.module_data(_UDID, force=True)
+    entry, coordinator = _context(data["schedules"])
+    coordinator.api, coordinator.data = api, data
+    hass = SimpleNamespace(data={const.DOMAIN: {entry.entry_id: coordinator}})
+    added = []
+    await binary_sensor.async_setup_entry(
+        hass, entry, lambda entities, update: added.extend(entities)
+    )
+    problems = [
+        entity
+        for entity in added
+        if isinstance(entity, binary_sensor.ScheduleProblemSensor)
+    ]
+    assert len(problems) == 1
+    assert problems[0].unique_id == f"{_UDID}_schedule_problem"
+    assert problems[0]._attr_translation_key == "schedule_problem_entity"
+    assert problems[0].available is True
+    assert problems[0].is_on is False
+
+    payload["zones"]["globalSchedules"]["elements"][0]["p0Intervals"] = [
+        {"start": 480, "stop": 0, "temp": 200}
+    ]
+    coordinator.data = {"schedules": _snapshot(payload), "tiles": {}}
+    assert problems[0].is_on is True
+
+    coordinator.last_update_success = False
+    assert problems[0].available is False
+    assert problems[0].is_on is None
 
 
 @pytest.mark.asyncio

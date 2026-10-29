@@ -83,6 +83,18 @@
             },
             "controller_schedules": {
                 "name": "Zeitpläne"
+            },
+            "zone_schedule_entity": {
+                "name": "Zeitplan"
+            },
+            "local_schedule_entity": {
+                "name": "Lokaler Zeitplan"
+            },
+            "global_schedule_entity": {
+                "name": "Globaler Zeitplan {schedule_number}"
+            },
+            "schedule_problem_entity": {
+                "name": "Zeitplanproblem"
             }
         }
     },
