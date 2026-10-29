@@ -81,6 +81,15 @@ def _temperature(value: Any) -> float | None:
     )
 
 
+def _clock_time(minutes: int) -> str:
+    """Render an end-exclusive schedule offset as a clock time.
+
+    The payload counts minutes from midnight, so 1440 is the end of the day
+    and is rendered as ``24:00`` rather than wrapping to ``00:00``.
+    """
+    return f"{minutes // 60:02d}:{minutes % 60:02d}"
+
+
 def _stable_raw(value: Any) -> Any:
     """Keep source values but omit polling metadata from recorder attributes."""
     if isinstance(value, dict):
@@ -160,6 +169,14 @@ def normalize_schedule(raw: Any) -> dict[str, Any]:
             if any(a["stop"] > b["start"] for a, b in zip(decoded, decoded[1:])):
                 errors.append(f"{prefix}Intervals:overlap")
                 valid = False
+            decoded = [
+                {
+                    "start": _clock_time(item["start"]),
+                    "stop": _clock_time(item["stop"]),
+                    "temperature": item["temperature"],
+                }
+                for item in decoded
+            ]
         profiles.append(
             {"profile": profile, "intervals": decoded, "setback_temperature": setback}
             if valid

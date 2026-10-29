@@ -165,8 +165,16 @@ def test_week_is_monday_first_with_temperatures_boundaries_and_setback() -> None
         "sunday",
     )
     assert decoded["week"]["monday"]["intervals"] == [
-        {"start": 0, "stop": 480, "temperature": 18.0},
-        {"start": 480, "stop": 1440, "temperature": 23.5},
+        {
+            "start": "00:00",
+            "stop": "08:00",
+            "temperature": 18.0,
+        },
+        {
+            "start": "08:00",
+            "stop": "24:00",
+            "temperature": 23.5,
+        },
     ]
     assert decoded["week"]["saturday"] == {
         "profile": 1,
