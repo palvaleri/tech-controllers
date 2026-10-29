@@ -85,7 +85,13 @@
                 "name": "Urniki"
             },
             "zone_schedule_entity": {
-                "name": "Urnik"
+                "name": "Urnik",
+                "state": {
+                  "constantTemp": "Konstantna temperatura",
+                  "globalSchedule": "Globalni urnik",
+                  "localSchedule": "Lokalni urnik",
+                  "timeLimit": "Časovna omejitev"
+                }
             },
             "local_schedule_entity": {
                 "name": "Lokalni urnik"

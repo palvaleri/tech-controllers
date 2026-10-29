@@ -85,7 +85,13 @@
                 "name": "Zeitpläne"
             },
             "zone_schedule_entity": {
-                "name": "Zeitplan"
+                "name": "Zeitplan",
+                "state": {
+                  "constantTemp": "Konstante Temperatur",
+                  "globalSchedule": "Globaler Zeitplan",
+                  "localSchedule": "Lokaler Zeitplan",
+                  "timeLimit": "Zeitlimit"
+                }
             },
             "local_schedule_entity": {
                 "name": "Lokaler Zeitplan"

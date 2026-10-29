@@ -85,7 +85,13 @@
                 "name": "Horarios"
             },
             "zone_schedule_entity": {
-                "name": "Horario"
+                "name": "Horario",
+                "state": {
+                  "constantTemp": "Temperatura constante",
+                  "globalSchedule": "Horario global",
+                  "localSchedule": "Horario local",
+                  "timeLimit": "Límite de tiempo"
+                }
             },
             "local_schedule_entity": {
                 "name": "Horario local"

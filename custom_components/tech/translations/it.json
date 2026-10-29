@@ -85,7 +85,13 @@
                 "name": "Programmazioni"
             },
             "zone_schedule_entity": {
-                "name": "Programmazione"
+                "name": "Programmazione",
+                "state": {
+                  "constantTemp": "Temperatura costante",
+                  "globalSchedule": "Programmazione globale",
+                  "localSchedule": "Programmazione locale",
+                  "timeLimit": "Limite di tempo"
+                }
             },
             "local_schedule_entity": {
                 "name": "Programmazione locale"

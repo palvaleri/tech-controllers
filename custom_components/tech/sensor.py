@@ -60,6 +60,7 @@ from homeassistant.helpers import entity_registry as er, issue_registry as ir
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.icon import icon_for_signal_level
+from homeassistant.helpers.translation import async_translate_state
 from homeassistant.helpers.typing import UndefinedType
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -1877,12 +1878,27 @@ class ZoneScheduleSensor(ZoneSensor):
 
     @property
     def native_value(self) -> str | None:
-        """Prefer the proven active name, then the configured mode."""
+        """Prefer the proven active name, then a translated configured mode."""
         data = self._schedule_data()
         if not self.coordinator.last_update_success or not isinstance(data, dict):
             return None
         info = zone_schedule_info(data, self._id, True)
-        return info["active_schedule_name"] or info["schedule_mode"]
+        if info["active_schedule_name"]:
+            return info["active_schedule_name"]
+        mode = info["schedule_mode"]
+        if mode is None:
+            return None
+        hass = getattr(self, "hass", None)
+        if hass is None:
+            return mode
+        return async_translate_state(
+            hass,
+            mode,
+            "sensor",
+            DOMAIN,
+            "zone_schedule_entity",
+            None,
+        )
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

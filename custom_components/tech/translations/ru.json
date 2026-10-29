@@ -85,7 +85,13 @@
                 "name": "Расписания"
             },
             "zone_schedule_entity": {
-                "name": "Расписание"
+                "name": "Расписание",
+                "state": {
+                  "constantTemp": "Постоянная температура",
+                  "globalSchedule": "Глобальное расписание",
+                  "localSchedule": "Локальное расписание",
+                  "timeLimit": "Ограничение времени"
+                }
             },
             "local_schedule_entity": {
                 "name": "Локальное расписание"

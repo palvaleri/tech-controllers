@@ -727,6 +727,32 @@ def test_template_sensors_report_missing_pending_and_invalid() -> None:
     assert local.native_value == "invalid"
 
 
+@pytest.mark.parametrize(
+    ("mode", "expected"),
+    [
+        ("constantTemp", "Constant Temperature"),
+        ("localSchedule", "Local Schedule"),
+    ],
+)
+def test_zone_schedule_mode_is_translated(
+    mode: str, expected: str, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A configured mode without an active name is translated for display."""
+    zone = _zone(mode=mode)
+    entry, coordinator = _context(_snapshot(_payload(zone)))
+    entity = sensor.ZoneScheduleSensor(zone, coordinator, entry)
+    entity.hass = SimpleNamespace(config=SimpleNamespace(language="en"))
+
+    def translate(hass, state, domain, platform, key, device_class):
+        assert domain == "sensor"
+        assert platform == const.DOMAIN
+        assert key == "zone_schedule_entity"
+        return expected if state == mode else state
+
+    monkeypatch.setattr(sensor, "async_translate_state", translate)
+    assert entity.native_value == expected
+
+
 def test_constant_temperature_zone_has_no_selected_schedule() -> None:
     """A constant-temp zone still exposes its local template without inventing one."""
     zone = _zone(mode="constantTemp")

@@ -85,7 +85,13 @@
                 "name": "Ajakavad"
             },
             "zone_schedule_entity": {
-                "name": "Ajakava"
+                "name": "Ajakava",
+                "state": {
+                  "constantTemp": "Püsiv temperatuur",
+                  "globalSchedule": "Globaalne ajakava",
+                  "localSchedule": "Kohalik ajakava",
+                  "timeLimit": "Ajalimiit"
+                }
             },
             "local_schedule_entity": {
                 "name": "Kohalik ajakava"

@@ -85,7 +85,13 @@
                 "name": "Ütemtervek"
             },
             "zone_schedule_entity": {
-                "name": "Ütemterv"
+                "name": "Ütemterv",
+                "state": {
+                  "constantTemp": "Állandó hőmérséklet",
+                  "globalSchedule": "Globális ütemterv",
+                  "localSchedule": "Helyi ütemterv",
+                  "timeLimit": "Időkorlát"
+                }
             },
             "local_schedule_entity": {
                 "name": "Helyi ütemterv"
