@@ -188,7 +188,7 @@ def test_week_is_monday_first_with_temperatures_boundaries_and_setback() -> None
 @pytest.mark.parametrize(
     "interval",
     [
-        {"start": 480, "stop": 0, "temp": 200},
+        {"start": 480, "stop": 400, "temp": 200},
         {"start": -1, "stop": 480, "temp": 200},
         {"start": 0, "stop": 1441, "temp": 200},
         {"start": True, "stop": 480, "temp": 200},
@@ -210,6 +210,19 @@ def test_bad_interval_never_creates_a_plausible_day(interval: Any) -> None:
     assert decoded["week"]["saturday"] is not None
     assert decoded["errors"]
     assert "raw" not in decoded
+
+
+def test_stop_zero_means_midnight() -> None:
+    """A nonzero start with stop zero ends at midnight, not at the start."""
+    raw = _schedule()
+    raw["p0Intervals"] = [{"start": 1380, "stop": 0, "temp": 200}]
+    raw["p1Intervals"] = [{"start": 6100, "stop": 6100, "temp": 200}]
+    decoded = schedules.normalize_schedule(raw)
+    assert decoded["valid"] is True
+    assert decoded["errors"] == []
+    assert decoded["week"]["monday"]["intervals"] == [
+        {"start": "23:00", "stop": "24:00", "temperature": 20.0}
+    ]
 
 
 def test_overlapping_intervals_and_conflicting_days_are_reported() -> None:
@@ -248,7 +261,7 @@ def test_unused_malformed_profile_does_not_erase_valid_selected_days() -> None:
     """Diagnostics retain the unused profile error, but the actual week is valid."""
     raw = _schedule()
     raw["p0Days"], raw["p1Days"] = ["1"] * 7, ["0"] * 7
-    raw["p1Intervals"] = [{"start": 480, "stop": 0, "temp": 200}]
+    raw["p1Intervals"] = [{"start": 480, "stop": 400, "temp": 200}]
     decoded = schedules.normalize_schedule(raw)
     assert decoded["valid"] is True
     assert all(day["profile"] == 0 for day in decoded["week"].values())
@@ -394,14 +407,14 @@ def test_duplicate_deleted_or_invalid_template_cannot_be_active() -> None:
     templates.clear()
     assert schedules.zone_schedule_info(snapshot, 101)["active_schedule_name"] is None
     templates.append(_schedule())
-    templates[0]["p0Intervals"] = [{"start": 480, "stop": 0, "temp": 200}]
+    templates[0]["p0Intervals"] = [{"start": 480, "stop": 400, "temp": 200}]
     assert schedules.zone_schedule_info(snapshot, 101)["active_schedule_name"] is None
 
 
 def test_unused_local_placeholders_do_not_make_the_controller_partial() -> None:
     """The L-8 shape: constant-temp zones with broken but unused local templates."""
     zone = _zone(mode="constantTemp")
-    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 0, "temp": 200}
+    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 400, "temp": 200}
     snapshot = _snapshot(_payload(zone))
     assert schedules.zone_schedule_info(snapshot, 101)["configured_source"] is None
     assert schedules.schedule_problem(snapshot) is False
@@ -411,7 +424,7 @@ def test_unused_local_placeholders_do_not_make_the_controller_partial() -> None:
 def test_a_broken_selected_local_schedule_is_a_problem() -> None:
     """A selected local template that fails decoding is a real controller problem."""
     zone = _zone(mode="localSchedule")
-    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 0, "temp": 200}
+    zone["schedule"]["p0Intervals"][0] = {"start": 480, "stop": 400, "temp": 200}
     snapshot = _snapshot(_payload(zone))
     assert schedules.selected_schedule(snapshot, 101)["valid"] is False
     assert schedules.schedule_problem(snapshot) is True
@@ -777,7 +790,7 @@ async def test_schedule_problem_sensor_tracks_only_selected_templates() -> None:
     assert problems[0].is_on is False
 
     payload["zones"]["globalSchedules"]["elements"][0]["p0Intervals"] = [
-        {"start": 480, "stop": 0, "temp": 200}
+        {"start": 480, "stop": 400, "temp": 200}
     ]
     coordinator.data = {"schedules": _snapshot(payload), "tiles": {}}
     assert problems[0].is_on is True

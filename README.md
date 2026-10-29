@@ -63,7 +63,8 @@ the selected and local templates, applicability, validity and errors.
 The **Local schedule** sensor per zone and the **Global schedule N** sensors per
 controller are disabled by default. They report `valid`, `pending`, `invalid` or
 `missing`, with the Monday-first week, `HH:MM` interval times, Celsius
-temperatures and decoding errors. A controller-level **Schedules** diagnostic
+temperatures and decoding errors. Intervals ending at midnight are displayed as
+`24:00`; the controller's `stop: 0` is treated as midnight. A controller-level **Schedules** diagnostic
 sensor, disabled by default, reports `ready`, `partial` or `missing`; its compact
 attributes summarize selection and errors without duplicating the template
 graphs. A **Schedule problem** binary sensor, enabled by default, turns on only

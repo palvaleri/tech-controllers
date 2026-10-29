@@ -24,6 +24,7 @@ SCHEDULE_INDEX_MAX = GLOBAL_SCHEDULE_SLOTS - 1
 SCHEDULE_TEMPERATURE_MIN = 50
 SCHEDULE_TEMPERATURE_MAX = 350
 SCHEDULE_TEMPERATURE_DIVISOR = 10
+MINUTES_IN_A_DAY = 24 * 60
 
 # `controllerMode` is the same type-108/value-0 "normal operation" marker the
 # eModul app reads. Anything else (holiday, eco, manual override, a pending
@@ -106,8 +107,9 @@ def _stable_raw(value: Any) -> Any:
 def normalize_schedule(raw: Any) -> dict[str, Any]:
     """Decode complete days; errors in an unused profile do not erase valid days.
 
-    The 6100/6100 and 0/0 slots are placeholders. Reversed intervals, including
-    a nonzero start with stop=0, are errors rather than inferred midnight spans.
+    The 6100/6100 and 0/0 slots are placeholders. A nonzero start with stop=0
+    is the controller's midnight endpoint and is normalized to 1440; other
+    reversed intervals are errors rather than inferred spans.
     """
     errors: list[str] = []
     week: dict[str, Any] = dict.fromkeys(DAYS)
@@ -152,11 +154,13 @@ def normalize_schedule(raw: Any) -> dict[str, Any]:
                     and (start, stop) in ((6100, 6100), (0, 0))
                 ):
                     continue
+                if type(start) is int and type(stop) is int and stop == 0:
+                    stop = MINUTES_IN_A_DAY
                 temp = _temperature(interval.get("temp"))
                 if not (
                     type(start) is int
                     and type(stop) is int
-                    and 0 <= start < stop <= 1440
+                    and 0 <= start < stop <= MINUTES_IN_A_DAY
                 ):
                     errors.append(f"{path}:invalid_range")
                     valid = False
