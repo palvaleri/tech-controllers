@@ -80,6 +80,9 @@
             },
             "zone_state_entity": {
                 "name": "{entity_name} Signalizacijos būsena"
+            },
+            "controller_schedules": {
+                "name": "Tvarkaraščiai"
             }
         }
     },

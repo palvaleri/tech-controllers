@@ -109,6 +109,9 @@
       },
       "zone_state_entity": {
         "name": "{entity_name} alarm state"
+      },
+      "controller_schedules": {
+        "name": "schedules"
       }
     }
   }

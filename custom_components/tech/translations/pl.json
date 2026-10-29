@@ -80,6 +80,9 @@
       },
       "zone_state_entity": {
         "name": "{entity_name} Stan alarmu"
+      },
+      "controller_schedules": {
+        "name": "Harmonogramy"
       }
     }
   },

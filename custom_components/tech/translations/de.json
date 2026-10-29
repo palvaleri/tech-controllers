@@ -80,6 +80,9 @@
             },
             "zone_state_entity": {
                 "name": "{entity_name} Alarmzustand"
+            },
+            "controller_schedules": {
+                "name": "Zeitpläne"
             }
         }
     },

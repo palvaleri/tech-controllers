@@ -80,6 +80,9 @@
             },
             "zone_state_entity": {
                 "name": "{entity_name} Stato di allarme"
+            },
+            "controller_schedules": {
+                "name": "Programmazioni"
             }
         }
     },

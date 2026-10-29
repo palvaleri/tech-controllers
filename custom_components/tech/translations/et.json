@@ -80,6 +80,9 @@
             },
             "zone_state_entity": {
                 "name": "{entity_name} Häire olek"
+            },
+            "controller_schedules": {
+                "name": "Ajakavad"
             }
         }
     },

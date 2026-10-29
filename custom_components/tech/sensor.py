@@ -1792,7 +1792,7 @@ class ControllerSchedulesSensor(CoordinatorEntity, SensorEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
     _attr_has_entity_name = True
-    _attr_name = "Schedules"
+    _attr_translation_key = "controller_schedules"
     _attr_icon = "mdi:calendar-week"
 
     def __init__(self, coordinator: TechCoordinator, config_entry: ConfigEntry) -> None:

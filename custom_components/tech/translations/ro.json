@@ -80,6 +80,9 @@
             },
             "zone_state_entity": {
                 "name": "{entity_name} Stare de alarmă"
+            },
+            "controller_schedules": {
+                "name": "Programări"
             }
         }
     },
