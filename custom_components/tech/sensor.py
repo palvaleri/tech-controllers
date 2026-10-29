@@ -1534,8 +1534,6 @@ class TileWidgetPumpSensor(_TileWidgetSensorBase):
     def get_state(self, device) -> Any:
         """Get the state of the device."""
         params = device[CONF_PARAMS]
-        if not reading_is_working(params):
-            return None
         return valid_number(params[self._widget_key].get(VALUE))
 
 
@@ -1781,8 +1779,6 @@ class TileOpenThermPercentageSensor(TileGenericOpenThermSensor):
     def get_state(self, device) -> Any:
         """Get the state of the device."""
         params = device[CONF_PARAMS]
-        if not reading_is_working(params):
-            return None
         return valid_number(params.get(self._state_key))
 
     @property

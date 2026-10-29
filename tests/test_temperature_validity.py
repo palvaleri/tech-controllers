@@ -334,11 +334,16 @@ def test_widget_temperature_uses_the_same_working_and_finite_checks() -> None:
     assert entity.native_value is None
 
 
-def test_widget_pump_uses_the_same_working_checks() -> None:
-    """A pump widget does not publish a stale percentage while its input is off."""
-    entity, coordinator = _build_widget(working=False, unit=8, value=5)
+def test_widget_pump_keeps_off_semantics_when_the_flag_is_false() -> None:
+    """A pump widget's false flag means "off", not "disconnected".
+
+    The temperature fix must not make a pump percentage unavailable just
+    because the output is off; that is a valid reading.
+    """
+    entity, coordinator = _build_widget(working=False, unit=8, value=0)
     assert isinstance(entity, sensor.TileWidgetPumpSensor)
-    assert entity.available is False
+    assert entity.available is True
+    assert entity.native_value == 0
 
     _refresh_tile(entity, coordinator, _widget_tile(unit=8, value=5))
     assert entity.available is True
