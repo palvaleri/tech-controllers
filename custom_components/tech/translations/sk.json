@@ -87,10 +87,10 @@
       "zone_schedule_entity": {
         "name": "Harmonogram",
         "state": {
-          "constantTemp": "Konštantná teplota",
-          "globalSchedule": "Globálny harmonogram",
-          "localSchedule": "Miestny harmonogram",
-          "timeLimit": "Časový limit"
+          "constant-temp": "Konštantná teplota",
+          "global-schedule": "Globálny harmonogram",
+          "local-schedule": "Miestny harmonogram",
+          "time-limit": "Časový limit"
         }
       },
       "local_schedule_entity": {

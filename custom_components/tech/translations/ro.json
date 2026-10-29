@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Programare",
                 "state": {
-                  "constantTemp": "Temperatură constantă",
-                  "globalSchedule": "Programare globală",
-                  "localSchedule": "Programare locală",
-                  "timeLimit": "Limită de timp"
+                  "constant-temp": "Temperatură constantă",
+                  "global-schedule": "Programare globală",
+                  "local-schedule": "Programare locală",
+                  "time-limit": "Limită de timp"
                 }
             },
             "local_schedule_entity": {

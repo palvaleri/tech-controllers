@@ -87,10 +87,10 @@
       "zone_schedule_entity": {
         "name": "Schedule",
         "state": {
-          "constantTemp": "Constant Temperature",
-          "globalSchedule": "Global Schedule",
-          "localSchedule": "Local Schedule",
-          "timeLimit": "Time Limit"
+          "constant-temp": "Constant Temperature",
+          "global-schedule": "Global Schedule",
+          "local-schedule": "Local Schedule",
+          "time-limit": "Time Limit"
         }
       },
       "local_schedule_entity": {

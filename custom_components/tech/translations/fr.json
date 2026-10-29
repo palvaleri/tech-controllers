@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Programmation",
                 "state": {
-                  "constantTemp": "Température constante",
-                  "globalSchedule": "Programmation globale",
-                  "localSchedule": "Programmation locale",
-                  "timeLimit": "Limite de temps"
+                  "constant-temp": "Température constante",
+                  "global-schedule": "Programmation globale",
+                  "local-schedule": "Programmation locale",
+                  "time-limit": "Limite de temps"
                 }
             },
             "local_schedule_entity": {

@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Schema",
                 "state": {
-                  "constantTemp": "Constante temperatuur",
-                  "globalSchedule": "Globaal schema",
-                  "localSchedule": "Lokaal schema",
-                  "timeLimit": "Tijdslimiet"
+                  "constant-temp": "Constante temperatuur",
+                  "global-schedule": "Globaal schema",
+                  "local-schedule": "Lokaal schema",
+                  "time-limit": "Tijdslimiet"
                 }
             },
             "local_schedule_entity": {

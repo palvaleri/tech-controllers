@@ -750,14 +750,17 @@ def test_template_sensors_report_missing_pending_and_invalid() -> None:
 
 
 @pytest.mark.parametrize(
-    ("mode", "expected"),
+    ("mode", "translation_key", "expected"),
     [
-        ("constantTemp", "Constant Temperature"),
-        ("localSchedule", "Local Schedule"),
+        ("constantTemp", "constant-temp", "Constant Temperature"),
+        ("localSchedule", "local-schedule", "Local Schedule"),
     ],
 )
 def test_zone_schedule_mode_is_translated(
-    mode: str, expected: str, monkeypatch: pytest.MonkeyPatch
+    mode: str,
+    translation_key: str,
+    expected: str,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """A configured mode without an active name is translated for display."""
     zone = _zone(mode=mode)
@@ -769,7 +772,8 @@ def test_zone_schedule_mode_is_translated(
         assert domain == "sensor"
         assert platform == const.DOMAIN
         assert key == "zone_schedule_entity"
-        return expected if state == mode else state
+        assert state == translation_key
+        return expected
 
     monkeypatch.setattr(sensor, "async_translate_state", translate)
     assert entity.native_value == expected

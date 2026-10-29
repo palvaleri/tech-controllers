@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Tvarkaraštis",
                 "state": {
-                  "constantTemp": "Pastovi temperatūra",
-                  "globalSchedule": "Bendras tvarkaraštis",
-                  "localSchedule": "Vietinis tvarkaraštis",
-                  "timeLimit": "Laiko limitas"
+                  "constant-temp": "Pastovi temperatūra",
+                  "global-schedule": "Bendras tvarkaraštis",
+                  "local-schedule": "Vietinis tvarkaraštis",
+                  "time-limit": "Laiko limitas"
                 }
             },
             "local_schedule_entity": {

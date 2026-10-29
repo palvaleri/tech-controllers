@@ -1891,14 +1891,18 @@ class ZoneScheduleSensor(ZoneSensor):
         hass = getattr(self, "hass", None)
         if hass is None:
             return mode
-        return async_translate_state(
+        translation_key = _SCHEDULE_MODE_TRANSLATION_KEYS.get(mode)
+        if translation_key is None:
+            return mode
+        translated = async_translate_state(
             hass,
-            mode,
+            translation_key,
             "sensor",
             DOMAIN,
             "zone_schedule_entity",
             None,
         )
+        return mode if translated == translation_key else translated
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -1971,6 +1975,14 @@ def _template_status(details: dict[str, Any] | None) -> str | None:
     if not details["settled"]:
         return "pending"
     return "valid" if details["valid"] else "invalid"
+
+
+_SCHEDULE_MODE_TRANSLATION_KEYS = {
+    "constantTemp": "constant-temp",
+    "globalSchedule": "global-schedule",
+    "localSchedule": "local-schedule",
+    "timeLimit": "time-limit",
+}
 
 
 class ControllerGlobalScheduleSensor(CoordinatorEntity, SensorEntity):

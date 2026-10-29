@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Horario",
                 "state": {
-                  "constantTemp": "Temperatura constante",
-                  "globalSchedule": "Horario global",
-                  "localSchedule": "Horario local",
-                  "timeLimit": "Límite de tiempo"
+                  "constant-temp": "Temperatura constante",
+                  "global-schedule": "Horario global",
+                  "local-schedule": "Horario local",
+                  "time-limit": "Límite de tiempo"
                 }
             },
             "local_schedule_entity": {

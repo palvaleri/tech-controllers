@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Ütemterv",
                 "state": {
-                  "constantTemp": "Állandó hőmérséklet",
-                  "globalSchedule": "Globális ütemterv",
-                  "localSchedule": "Helyi ütemterv",
-                  "timeLimit": "Időkorlát"
+                  "constant-temp": "Állandó hőmérséklet",
+                  "global-schedule": "Globális ütemterv",
+                  "local-schedule": "Helyi ütemterv",
+                  "time-limit": "Időkorlát"
                 }
             },
             "local_schedule_entity": {

@@ -87,10 +87,10 @@
             "zone_schedule_entity": {
                 "name": "Raspored",
                 "state": {
-                  "constantTemp": "Konstantna temperatura",
-                  "globalSchedule": "Globalni raspored",
-                  "localSchedule": "Lokalni raspored",
-                  "timeLimit": "Vremensko ograničenje"
+                  "constant-temp": "Konstantna temperatura",
+                  "global-schedule": "Globalni raspored",
+                  "local-schedule": "Lokalni raspored",
+                  "time-limit": "Vremensko ograničenje"
                 }
             },
             "local_schedule_entity": {

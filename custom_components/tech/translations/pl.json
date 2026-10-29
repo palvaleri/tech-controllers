@@ -87,10 +87,10 @@
       "zone_schedule_entity": {
         "name": "Harmonogram",
         "state": {
-          "constantTemp": "Stała temperatura",
-          "globalSchedule": "Harmonogram globalny",
-          "localSchedule": "Harmonogram lokalny",
-          "timeLimit": "Limit czasu"
+          "constant-temp": "Stała temperatura",
+          "global-schedule": "Harmonogram globalny",
+          "local-schedule": "Harmonogram lokalny",
+          "time-limit": "Limit czasu"
         }
       },
       "local_schedule_entity": {
