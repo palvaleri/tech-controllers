@@ -61,7 +61,9 @@ is the proven active schedule name, falling back to the configured mode
 the selected and local templates, applicability, validity and errors.
 
 The **Local schedule** sensor per zone and the **Global schedule N** sensors per
-controller are disabled by default. They report `valid`, `pending`, `invalid` or
+controller are disabled by default. All five global slots are created up front;
+a slot without a template reports `missing` and becomes valid without a reload
+once the controller adds it. They report `valid`, `pending`, `invalid` or
 `missing`, with the Monday-first week, `HH:MM` interval times, Celsius
 temperatures and decoding errors. Intervals ending at midnight are displayed as
 `24:00`; the controller's `stop: 0` is treated as midnight. A controller-level **Schedules** diagnostic

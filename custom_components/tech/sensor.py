@@ -172,24 +172,9 @@ async def async_setup_entry(
     schedule_entities = []
     if isinstance(schedule_data, dict) and schedule_data.get("supported"):
         schedule_entities.append(ControllerSchedulesSensor(coordinator, config_entry))
-        global_schedules = schedule_data.get("globalSchedules")
-        elements = (
-            global_schedules.get("elements")
-            if isinstance(global_schedules, dict)
-            else None
-        )
-        indices = sorted(
-            {
-                item["index"]
-                for item in (elements if isinstance(elements, list) else [])
-                if isinstance(item, dict)
-                and type(item.get("index")) is int
-                and 0 <= item["index"] < GLOBAL_SCHEDULE_SLOTS
-            }
-        )
         schedule_entities.extend(
             ControllerGlobalScheduleSensor(coordinator, config_entry, index)
-            for index in indices
+            for index in range(GLOBAL_SCHEDULE_SLOTS)
         )
     async_add_entities(
         [*tile_entities, *zone_entities, *deprecated_entities, *schedule_entities], True

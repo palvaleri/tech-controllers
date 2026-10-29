@@ -661,11 +661,19 @@ async def test_real_cache_and_setup_share_existing_gets_and_clear_removed_zones(
     assert local_schedules[0].native_value == "valid"
     assert local_schedules[0]._attr_translation_key == "local_schedule_entity"
     assert local_schedules[0]._attr_entity_registry_enabled_default is False
-    assert len(global_schedules) == 1
-    assert global_schedules[0].unique_id == f"{_UDID}_schedule_global_1"
-    assert global_schedules[0].native_value == "valid"
-    assert global_schedules[0]._attr_translation_key == "global_schedule_entity"
-    assert global_schedules[0]._attr_entity_registry_enabled_default is False
+    assert len(global_schedules) == schedules.GLOBAL_SCHEDULE_SLOTS
+    by_index = {entity._index: entity for entity in global_schedules}
+    assert sorted(by_index) == list(range(schedules.GLOBAL_SCHEDULE_SLOTS))
+    assert by_index[1].unique_id == f"{_UDID}_schedule_global_1"
+    assert by_index[1].native_value == "valid"
+    assert by_index[1]._attr_translation_key == "global_schedule_entity"
+    assert by_index[1]._attr_entity_registry_enabled_default is False
+    assert by_index[4].native_value == "missing"
+
+    coordinator.data["schedules"]["globalSchedules"]["elements"].append(
+        _schedule(4, "Later")
+    )
+    assert by_index[4].native_value == "valid"
     assert len(transport.requests) == expected_gets
     assert (
         thermostats[0].extra_state_attributes["active_schedule_name"]
