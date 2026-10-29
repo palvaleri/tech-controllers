@@ -34,7 +34,13 @@ SCHEDULE_CONTROLLER_MODE_NORMAL = 0
 
 
 def schedule_snapshot(zones: Any) -> dict[str, Any]:
-    """Copy schedule inputs from this refresh, never from the accumulated cache."""
+    """Copy schedule inputs from this refresh, never from the accumulated cache.
+
+    ``supported`` describes schema capability, not the current selection: the
+    controller is capable when it returns global template elements or any zone
+    carries a mode/schedule object, even when every zone is currently in
+    constant-temperature mode.
+    """
     envelope = zones if isinstance(zones, dict) else {}
     elements = envelope.get("elements")
     current = {}

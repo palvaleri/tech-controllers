@@ -53,7 +53,10 @@ Controllers that report zone schedules, including M-9r, expose three additional
 climate attributes: `schedule_mode`, `schedule_index` and `active_schedule_name`.
 An active name requires a complete, valid schedule and confirmed Normal mode;
 Holiday, Eco, Comfort, pending changes and failed updates suppress that name.
-A local schedule without a supplied name keeps the name empty.
+A local schedule without a supplied name keeps the name empty. A controller is
+treated as schedule-capable when the payload exposes global template elements
+or a zone mode/schedule object, even if every zone is currently in
+constant-temperature mode.
 
 The zone also has a read-only **Schedule** sensor, enabled by default. Its state
 is the proven active schedule name, falling back to the configured mode

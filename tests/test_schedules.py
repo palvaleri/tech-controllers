@@ -149,6 +149,28 @@ def _context(snapshot: dict) -> tuple[SimpleNamespace, SimpleNamespace]:
     return entry, coordinator
 
 
+def test_schedule_support_is_schema_capability() -> None:
+    """Capability means the fields exist, not that a schedule is selected."""
+    global_only = schedules.schedule_snapshot(
+        {"elements": [], "globalSchedules": {"elements": [_schedule()]}}
+    )
+    assert global_only["supported"] is True
+
+    zone = _zone(mode="constantTemp")
+    zone_only = schedules.schedule_snapshot(
+        {"elements": [zone], "globalSchedules": {"elements": []}}
+    )
+    assert zone_only["supported"] is True
+
+    zone["mode"] = None
+    zone["schedule"] = None
+    no_schema = schedules.schedule_snapshot(
+        {"elements": [zone], "globalSchedules": {"elements": []}}
+    )
+    assert no_schema["supported"] is False
+    assert schedules.schedule_snapshot({})["supported"] is False
+
+
 def test_week_is_monday_first_with_temperatures_boundaries_and_setback() -> None:
     """Weekday intervals and weekend fallback retain both decoded profiles."""
     raw = _schedule()
