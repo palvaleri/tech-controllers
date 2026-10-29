@@ -150,7 +150,7 @@ def _context(snapshot: dict) -> tuple[SimpleNamespace, SimpleNamespace]:
 
 
 def test_week_is_monday_first_with_temperatures_boundaries_and_setback() -> None:
-    """Weekday intervals and weekend fallback retain both profiles and raw slots."""
+    """Weekday intervals and weekend fallback retain both decoded profiles."""
     raw = _schedule()
     raw["p1Intervals"].append({"start": 0, "stop": 0, "temp": 200})
     decoded = schedules.normalize_schedule(raw)

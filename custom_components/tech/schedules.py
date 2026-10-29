@@ -406,7 +406,7 @@ def climate_schedule_attributes(
 
 
 def schedule_diagnostics(snapshot: Any, available: bool = True) -> dict[str, Any]:
-    """Publish templates once per controller, with stable raw/error provenance."""
+    """Publish decoded templates once per controller with stable error provenance."""
     if not available:
         return {"status": "unavailable", "errors": ["coordinator_unavailable"]}
     if not isinstance(snapshot, dict):

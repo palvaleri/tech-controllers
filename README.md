@@ -55,12 +55,20 @@ An active name requires a complete, valid schedule and confirmed Normal mode;
 Holiday, Eco, Comfort, pending changes and failed updates suppress that name.
 A local schedule without a supplied name keeps the name empty.
 
-The controller also has a **Schedules** diagnostic sensor, disabled by default.
-Enable it in the controller's entity list to inspect global templates once per
-controller and the local template for each zone. It includes the raw values,
-a Monday-first week, interval times in minutes, temperatures in degrees Celsius
-and decoding errors. Its `ready`, `partial` or `missing` state describes decoding;
-each zone's `schedule_applicable` attribute describes applicability.
+The zone also has a read-only **Schedule** sensor, enabled by default. Its state
+is the proven active schedule name, falling back to the configured mode
+(`globalSchedule`, `localSchedule`, `constantTemp`, ...). Its attributes carry
+the selected and local templates, applicability, validity and errors.
+
+The **Local schedule** sensor per zone and the **Global schedule N** sensors per
+controller are disabled by default. They report `valid`, `pending`, `invalid` or
+`missing`, with the Monday-first week, `HH:MM` interval times, Celsius
+temperatures and decoding errors. A controller-level **Schedules** diagnostic
+sensor, disabled by default, reports `ready`, `partial` or `missing`; its compact
+attributes summarize selection and errors without duplicating the template
+graphs. A **Schedule problem** binary sensor, enabled by default, turns on only
+when a selected template is missing or invalid. Raw controller payloads are not
+exposed.
 
 These are read-only configuration details from the existing poll. They add no
 API requests, do not change schedules or targets, and do not calculate the current
